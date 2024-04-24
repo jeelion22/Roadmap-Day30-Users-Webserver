@@ -1,5 +1,5 @@
 const express = require("express");
-const { body, validationResult } = require("express-validator");
+const { body, validationResult, param } = require("express-validator");
 const cors = require("cors");
 
 const app = express();
@@ -240,7 +240,7 @@ const users = [
   },
 ];
 
-console.log(users.length);
+// console.log(users.length);
 
 app.get("/users", (req, res) => {
   try {
@@ -283,6 +283,30 @@ app.post(
     users.push(user);
 
     res.status(201).json({ message: "user created successfully!", user: user });
+  }
+);
+
+app.get(
+  "/users/:userId",
+  param("userId").notEmpty().isNumeric().escape().trim(),
+  (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { userId } = req.params;
+
+    console.log(userId);
+
+    const user = users.find((user) => user.id === parseInt(userId));
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user);
   }
 );
 
