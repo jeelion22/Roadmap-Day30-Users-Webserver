@@ -298,7 +298,7 @@ app.get(
 
     const { userId } = req.params;
 
-    console.log(userId);
+    // console.log(userId);
 
     const user = users.find((user) => user.id === parseInt(userId));
 
@@ -307,6 +307,52 @@ app.get(
     }
 
     res.json(user);
+  }
+);
+
+// update user
+
+app.put(
+  "/users/:userId",
+
+  [
+    param("userId").notEmpty().isNumeric().escape().trim(),
+    body("name").notEmpty().isString().escape().trim(),
+    body("username").notEmpty().isString().escape().trim(),
+    body("email").notEmpty().isEmail().escape().trim(),
+    body("address.street").notEmpty().isString().escape().trim(),
+    body("address.suite").notEmpty().isString().escape().trim(),
+    body("address.city").notEmpty().isString().escape().trim(),
+    body("address.zipcode").notEmpty().isString().escape().trim(),
+    body("address.street").notEmpty().isString().escape().trim(),
+    body("address.geo.lat").notEmpty().isString().escape().trim(),
+    body("address.geo.lng").notEmpty().isString().escape().trim(),
+    body("phone").notEmpty().isString().escape().trim(),
+    body("website").notEmpty().isString().escape().trim(),
+    body("company.name").notEmpty().isString().escape().trim(),
+    body("company.catchPhrase").notEmpty().isString().escape().trim(),
+    body("company.bs").notEmpty().isString().escape().trim(),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { userId } = req.params;
+
+    const user = users.find((user) => user.id === parseInt(userId));
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.id = parseInt(userId);
+
+    Object.assign(user, req.body);
+
+    res.json({ message: "User updated successfully!" });
   }
 );
 
