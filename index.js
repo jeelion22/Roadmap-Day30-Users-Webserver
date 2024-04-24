@@ -310,6 +310,35 @@ app.get(
   }
 );
 
+// delete user
+app.delete(
+  "/users/:userId",
+  param("userId").notEmpty().isNumeric().escape().trim(),
+  (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { userId } = req.params;
+
+    let userIndex;
+
+    const user = users.find(
+      (user, index) => ((userIndex = index), user.id == parseInt(userId))
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    users.splice(userIndex, 1);
+
+    res.status(202).json({ message: "User deleted successfully" });
+  }
+);
+
 app.listen(PORT, () => {
   console.log(`servre is listening on port ${PORT}`);
 });
