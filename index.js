@@ -5,7 +5,7 @@ const cors = require("cors");
 const app = express();
 const PORT = 4000;
 
-app.use(cors({ origin: "localhost:5173" }));
+app.use(cors({ origin: "localhost:4000" }));
 app.use(express.json());
 
 const users = [
